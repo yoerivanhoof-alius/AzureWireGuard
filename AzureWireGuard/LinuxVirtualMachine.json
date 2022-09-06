@@ -39,16 +39,16 @@
     "diagnosticsStorageType": "Standard_LRS",
     "publicIPAddressType": "Dynamic",
     "vmSize": "Standard_DS2_v2",
-    "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', variables('resourceName'))]",
-    "subnetRef": "[concat(variables('vnetId'), '/subnets/', variables('resourceName'))]",
-    "ladMetricsResourceId": "[resourceId('Microsoft.Compute/virtualMachines', variables('resourceName'))]",
+    "vnetId": "[resourceId('Microsoft.Network/virtualNetworks/vn-plcportal-prod')]",
+    "subnetRef": "[concat(variables('vnetId'), '/subnets/sn-plcportal-prod')]",
+    "ladMetricsResourceId": "[resourceId('Microsoft.Compute/virtualMachines/vm-plcportal-prod' )]",
     "AzureWireGuardScriptFolder": "CustomScripts",
     "AzureWireGuardScriptFileName": "AzureWireGuard.sh"
   },
   "resources": [
     {
       "type": "Microsoft.Storage/storageAccounts",
-      "name": "[variables('resourceName')]",
+      "name": "sa-plcportal-prod",
       "apiVersion": "2018-07-01",
       "location": "[resourceGroup().location]",
       "tags": {
@@ -62,7 +62,7 @@
     {
       "apiVersion": "2018-01-01",
       "type": "Microsoft.Network/networkSecurityGroups",
-      "name": "[variables('resourceName')]",
+      "name": "nsg-plcportal-prod",
       "tags": {
         "displayName": "NetworkSecurityGroup"
       },
@@ -103,7 +103,7 @@
     {
       "apiVersion": "2018-08-01",
       "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[variables('resourceName')]",
+      "name": "pip-plcportal-prod",
       "location": "[resourceGroup().location]",
       "tags": {
         "displayName": "PublicIPAddress"
@@ -118,7 +118,7 @@
     {
       "apiVersion": "2018-08-01",
       "type": "Microsoft.Network/virtualNetworks",
-      "name": "[variables('resourceName')]",
+      "name": "vn-plcportal-prod",
       "location": "[resourceGroup().location]",
       "tags": {
         "displayName": "VirtualNetwork"
@@ -131,7 +131,7 @@
         },
         "subnets": [
           {
-            "name": "[variables('resourceName')]",
+            "name": "sn-plcportal-prod",
             "properties": {
               "addressPrefix": "[variables('subnetPrefix')]"
             }
@@ -142,15 +142,15 @@
     {
       "apiVersion": "2018-08-01",
       "type": "Microsoft.Network/networkInterfaces",
-      "name": "[variables('resourceName')]",
+      "name": "ni-plcportal-prod",
       "location": "[resourceGroup().location]",
       "tags": {
         "displayName": "NetworkInterface"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/publicIPAddresses', variables('resourceName'))]",
-        "[resourceId('Microsoft.Network/virtualNetworks', variables('resourceName'))]",
-        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('resourceName'))]"
+        "[resourceId('Microsoft.Network/publicIPAddresses/pip-plcportal-prod')]",
+        "[resourceId('Microsoft.Network/virtualNetworks/vn-plcportal-prod')]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups/nsg-plcportal-prod')]"
       ],
       "properties": {
         "ipConfigurations": [
@@ -159,7 +159,7 @@
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('resourceName'))]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses/pip-plcportal-prod')]"
               },
               "subnet": {
                 "id": "[variables('subnetRef')]"
@@ -168,7 +168,7 @@
           }
         ],
         "networkSecurityGroup": {
-          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('resourceName'))]"
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups/nsg-plcportal-prod')]"
         },
         "enableAcceleratedNetworking": true
       }
@@ -176,20 +176,20 @@
     {
       "apiVersion": "2018-10-01",
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "[variables('resourceName')]",
+      "name": "vm-plcportal-prod",
       "location": "[resourceGroup().location]",
       "tags": {
         "displayName": "VirtualMachine"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/networkInterfaces', variables('resourceName'))]"
+        "[resourceId('Microsoft.Network/networkInterfaces/ni-plcportal-prod')]"
       ],
       "properties": {
         "hardwareProfile": {
           "vmSize": "[variables('vmSize')]"
         },
         "osProfile": {
-          "computerName": "[variables('resourceName')]",
+          "computerName": "os-plcportal-prod",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]"
         },
@@ -201,7 +201,7 @@
             "version": "latest"
           },
           "osDisk": {
-            "name": "[variables('resourceName')]",
+            "name": "osd-plcportal-prod",
             "caching": "ReadWrite",
             "createOption": "FromImage"
           }
@@ -209,7 +209,7 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('resourceName'))]"
+              "id": "[resourceId('Microsoft.Network/networkInterfaces/ni-plcportal-prod')]"
             }
           ]
         }
@@ -225,7 +225,7 @@
             "displayName": "AzureDiagnostics"
           },
           "dependsOn": [
-            "[resourceId('Microsoft.Compute/virtualMachines', variables('resourceName'))]"
+            "[resourceId('Microsoft.Compute/virtualMachines/vm-plcportal-prod',)]"
           ],
           "properties": {
             "publisher": "Microsoft.OSTCExtensions",
@@ -482,8 +482,8 @@
               }
             },
             "protectedSettings": {
-              "storageAccountName": "[variables('resourceName')]",
-              "storageAccountKey": "[listkeys(resourceId('Microsoft.Storage/storageAccounts', variables('resourceName')), '2016-01-01').keys[0].value]"
+              "storageAccountName": "sa-plcportal-prod",
+              "storageAccountKey": "[listkeys(resourceId('Microsoft.Storage/storageAccounts/sa-plcportal-prod'), '2016-01-01').keys[0].value]"
             }
           }
         }
