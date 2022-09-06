@@ -32,7 +32,7 @@
   "variables": {
     "imagePublisher": "Canonical",
     "imageOffer": "UbuntuServer",
-    "ubuntuOSVersion": "22.04-LTS",
+    "ubuntuOSVersion": "18.04-LTS",
     "resourceName": "[uniqueString(subscription().subscriptionId, resourceGroup().id)]",
     "addressPrefix": "10.0.0.0/16",
     "subnetPrefix": "10.0.0.0/24",
@@ -62,7 +62,7 @@
     {
       "apiVersion": "2018-01-01",
       "type": "Microsoft.Network/networkSecurityGroups",
-      "name": "'nsg-plcportal-prod'",
+      "name": "nsg-plcportal-prod",
       "tags": {
         "displayName": "NetworkSecurityGroup"
       },
