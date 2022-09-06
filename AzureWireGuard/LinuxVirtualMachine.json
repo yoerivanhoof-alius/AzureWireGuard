@@ -39,16 +39,16 @@
     "diagnosticsStorageType": "Standard_LRS",
     "publicIPAddressType": "Dynamic",
     "vmSize": "Standard_DS2_v2",
-    "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', 'vn-plcportal-prod')]",
-    "subnetRef": "[concat(variables('vnetId'), '/subnets/', 'sn-plcportal-prod')]",
-    "ladMetricsResourceId": "[resourceId('Microsoft.Compute/virtualMachines', 'vm-plcportal-prod')]",
+    "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', 'vn-climateplcportal-prod')]",
+    "subnetRef": "[concat(variables('vnetId'), '/subnets/', 'sn-climateplcportal-prod')]",
+    "ladMetricsResourceId": "[resourceId('Microsoft.Compute/virtualMachines', 'vm-climateplcportal-prod')]",
     "AzureWireGuardScriptFolder": "CustomScripts",
     "AzureWireGuardScriptFileName": "AzureWireGuard.sh"
   },
   "resources": [
     {
       "type": "Microsoft.Storage/storageAccounts",
-      "name": "sa-plcportal-prod",
+      "name": "sa-climateplcportal-prod",
       "apiVersion": "2018-07-01",
       "location": "[resourceGroup().location]",
       "tags": {
@@ -62,7 +62,7 @@
     {
       "apiVersion": "2018-01-01",
       "type": "Microsoft.Network/networkSecurityGroups",
-      "name": "nsg-plcportal-prod",
+      "name": "nsg-climateplcportal-prod",
       "tags": {
         "displayName": "NetworkSecurityGroup"
       },
@@ -103,7 +103,7 @@
     {
       "apiVersion": "2018-08-01",
       "type": "Microsoft.Network/publicIPAddresses",
-      "name": "pip-plcportal-prod",
+      "name": "pip-climateplcportal-prod",
       "location": "[resourceGroup().location]",
       "tags": {
         "displayName": "PublicIPAddress"
@@ -118,7 +118,7 @@
     {
       "apiVersion": "2018-08-01",
       "type": "Microsoft.Network/virtualNetworks",
-      "name": "vn-plcportal-prod",
+      "name": "vn-climateplcportal-prod",
       "location": "[resourceGroup().location]",
       "tags": {
         "displayName": "VirtualNetwork"
@@ -131,7 +131,7 @@
         },
         "subnets": [
           {
-            "name": "sn-plcportal-prod",
+            "name": "sn-climateplcportal-prod",
             "properties": {
               "addressPrefix": "[variables('subnetPrefix')]"
             }
@@ -142,15 +142,15 @@
     {
       "apiVersion": "2018-08-01",
       "type": "Microsoft.Network/networkInterfaces",
-      "name": "ni-plcportal-prod",
+      "name": "ni-climateplcportal-prod",
       "location": "[resourceGroup().location]",
       "tags": {
         "displayName": "NetworkInterface"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/publicIPAddresses', 'pip-plcportal-prod')]",
-        "[resourceId('Microsoft.Network/virtualNetworks', 'vn-plcportal-prod')]",
-        "[resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-plcportal-prod')]"
+        "[resourceId('Microsoft.Network/publicIPAddresses', 'pip-climateplcportal-prod')]",
+        "[resourceId('Microsoft.Network/virtualNetworks', 'vn-climateplcportal-prod')]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-climateplcportal-prod')]"
       ],
       "properties": {
         "ipConfigurations": [
@@ -159,7 +159,7 @@
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', 'pip-plcportal-prod')]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', 'pip-climateplcportal-prod')]"
               },
               "subnet": {
                 "id": "[variables('subnetRef')]"
@@ -168,7 +168,7 @@
           }
         ],
         "networkSecurityGroup": {
-          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-plcportal-prod')]"
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-climateplcportal-prod')]"
         },
         "enableAcceleratedNetworking": true
       }
@@ -176,20 +176,20 @@
     {
       "apiVersion": "2018-10-01",
       "type": "Microsoft.Compute/virtualMachines",
-      "name": "vm-plcportal-prod",
+      "name": "vm-climateplcportal-prod",
       "location": "[resourceGroup().location]",
       "tags": {
         "displayName": "VirtualMachine"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/networkInterfaces', 'ni-plcportal-prod')]"
+        "[resourceId('Microsoft.Network/networkInterfaces', 'ni-climateplcportal-prod')]"
       ],
       "properties": {
         "hardwareProfile": {
           "vmSize": "[variables('vmSize')]"
         },
         "osProfile": {
-          "computerName": "os-plcportal-prod",
+          "computerName": "os-climateplcportal-prod",
           "adminUsername": "[parameters('adminUsername')]",
           "adminPassword": "[parameters('adminPassword')]"
         },
@@ -201,7 +201,7 @@
             "version": "latest"
           },
           "osDisk": {
-            "name": "osd-plcportal-prod",
+            "name": "osd-climateplcportal-prod",
             "caching": "ReadWrite",
             "createOption": "FromImage"
           }
@@ -209,7 +209,7 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', 'ni-plcportal-prod' )]"
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', 'ni-climateplcportal-prod' )]"
             }
           ]
         }
@@ -221,7 +221,7 @@
           "location": "[resourceGroup().location]",
           "apiVersion": "2016-03-30",
           "dependsOn": [
-            "[resourceId('Microsoft.Compute/virtualMachines', 'vm-plcportal-prod')]"
+            "[resourceId('Microsoft.Compute/virtualMachines', 'vm-climateplcportal-prod')]"
           ],
           "tags": {
             "displayName": "AzureWireGuard"
@@ -236,7 +236,7 @@
               "fileUris": [
                 "[concat(parameters('_artifactsLocation'), '/', variables('AzureWireGuardScriptFolder'), '/', variables('AzureWireGuardScriptFileName'), parameters('_artifactsLocationSasToken'))]"
               ],
-              "commandToExecute": "[concat('bash ', variables('AzureWireGuardScriptFileName'), ' ', reference(resourceId('Microsoft.Network/publicIPAddresses', 'pip-plcportal-prod')).dnsSettings.fqdn, ' ', parameters('adminUsername'))]"
+              "commandToExecute": "[concat('bash ', variables('AzureWireGuardScriptFileName'), ' ', reference(resourceId('Microsoft.Network/publicIPAddresses', 'pip-climateplcportal-prod')).dnsSettings.fqdn, ' ', parameters('adminUsername'))]"
             }
           }
         },
@@ -249,7 +249,7 @@
             "displayName": "AzureDiagnostics"
           },
           "dependsOn": [
-            "[resourceId('Microsoft.Compute/virtualMachines', 'vm-plcportal-prod')]"
+            "[resourceId('Microsoft.Compute/virtualMachines', 'vm-climateplcportal-prod')]"
           ],
           "properties": {
             "publisher": "Microsoft.OSTCExtensions",
@@ -506,8 +506,8 @@
               }
             },
             "protectedSettings": {
-              "storageAccountName": "sa-plcportal-prod",
-              "storageAccountKey": "[listkeys(resourceId('Microsoft.Storage/storageAccounts', 'sa-plcportal-prod'), '2016-01-01').keys[0].value]"
+              "storageAccountName": "sa-climateplcportal-prod",
+              "storageAccountKey": "[listkeys(resourceId('Microsoft.Storage/storageAccounts', 'sa-climateplcportal-prod'), '2016-01-01').keys[0].value]"
             }
           }
         }
