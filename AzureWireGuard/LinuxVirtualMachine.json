@@ -39,9 +39,9 @@
     "diagnosticsStorageType": "Standard_LRS",
     "publicIPAddressType": "Dynamic",
     "vmSize": "Standard_DS2_v2",
-    "vnetId": "[resourceId('Microsoft.Network/virtualNetworks/vn-plcportal-prod')]",
-    "subnetRef": "[concat(variables('vnetId'), '/subnets/sn-plcportal-prod')]",
-    "ladMetricsResourceId": "[resourceId('Microsoft.Compute/virtualMachines/vm-plcportal-prod' )]",
+    "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', 'vn-plcportal-prod')]",
+    "subnetRef": "[concat(variables('vnetId'), '/subnets/', 'sn-plcportal-prod')]",
+    "ladMetricsResourceId": "[resourceId('Microsoft.Compute/virtualMachines', 'vm-plcportal-prod')]",
     "AzureWireGuardScriptFolder": "CustomScripts",
     "AzureWireGuardScriptFileName": "AzureWireGuard.sh"
   },
@@ -62,7 +62,7 @@
     {
       "apiVersion": "2018-01-01",
       "type": "Microsoft.Network/networkSecurityGroups",
-      "name": "nsg-plcportal-prod",
+      "name": "'nsg-plcportal-prod'",
       "tags": {
         "displayName": "NetworkSecurityGroup"
       },
@@ -148,9 +148,9 @@
         "displayName": "NetworkInterface"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/publicIPAddresses/pip-plcportal-prod')]",
-        "[resourceId('Microsoft.Network/virtualNetworks/vn-plcportal-prod')]",
-        "[resourceId('Microsoft.Network/networkSecurityGroups/nsg-plcportal-prod')]"
+        "[resourceId('Microsoft.Network/publicIPAddresses', 'pip-plcportal-prod')]",
+        "[resourceId('Microsoft.Network/virtualNetworks', 'vn-plcportal-prod')]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-plcportal-prod')]"
       ],
       "properties": {
         "ipConfigurations": [
@@ -159,7 +159,7 @@
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses/pip-plcportal-prod')]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', 'pip-plcportal-prod')]"
               },
               "subnet": {
                 "id": "[variables('subnetRef')]"
@@ -168,7 +168,7 @@
           }
         ],
         "networkSecurityGroup": {
-          "id": "[resourceId('Microsoft.Network/networkSecurityGroups/nsg-plcportal-prod')]"
+          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', 'nsg-plcportal-prod')]"
         },
         "enableAcceleratedNetworking": true
       }
@@ -182,7 +182,7 @@
         "displayName": "VirtualMachine"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/networkInterfaces/ni-plcportal-prod')]"
+        "[resourceId('Microsoft.Network/networkInterfaces', 'ni-plcportal-prod')]"
       ],
       "properties": {
         "hardwareProfile": {
@@ -209,13 +209,37 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces/ni-plcportal-prod')]"
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', 'ni-plcportal-prod' )]"
             }
           ]
         }
       },
       "resources": [
-        
+        {
+          "name": "AzureWireGuard",
+          "type": "extensions",
+          "location": "[resourceGroup().location]",
+          "apiVersion": "2016-03-30",
+          "dependsOn": [
+            "[resourceId('Microsoft.Compute/virtualMachines', 'vm-plcportal-prod')]"
+          ],
+          "tags": {
+            "displayName": "AzureWireGuard"
+          },
+          "properties": {
+            "publisher": "Microsoft.Azure.Extensions",
+            "type": "CustomScript",
+            "typeHandlerVersion": "2.0",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "skipDos2Unix": false,
+              "fileUris": [
+                "[concat(parameters('_artifactsLocation'), '/', variables('AzureWireGuardScriptFolder'), '/', variables('AzureWireGuardScriptFileName'), parameters('_artifactsLocationSasToken'))]"
+              ],
+              "commandToExecute": "[concat('bash ', variables('AzureWireGuardScriptFileName'), ' ', reference(resourceId('Microsoft.Network/publicIPAddresses', 'pip-plcportal-prod')).dnsSettings.fqdn, ' ', parameters('adminUsername'))]"
+            }
+          }
+        },
         {
           "type": "extensions",
           "name": "Microsoft.Insights.VMDiagnosticsSettings",
@@ -225,7 +249,7 @@
             "displayName": "AzureDiagnostics"
           },
           "dependsOn": [
-            "[resourceId('Microsoft.Compute/virtualMachines/vm-plcportal-prod',)]"
+            "[resourceId('Microsoft.Compute/virtualMachines', 'vm-plcportal-prod')]"
           ],
           "properties": {
             "publisher": "Microsoft.OSTCExtensions",
@@ -483,7 +507,7 @@
             },
             "protectedSettings": {
               "storageAccountName": "sa-plcportal-prod",
-              "storageAccountKey": "[listkeys(resourceId('Microsoft.Storage/storageAccounts/sa-plcportal-prod'), '2016-01-01').keys[0].value]"
+              "storageAccountKey": "[listkeys(resourceId('Microsoft.Storage/storageAccounts', 'sa-plcportal-prod'), '2016-01-01').keys[0].value]"
             }
           }
         }
