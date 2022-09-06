@@ -215,31 +215,7 @@
         }
       },
       "resources": [
-        {
-          "name": "AzureWireGuard",
-          "type": "extensions",
-          "location": "[resourceGroup().location]",
-          "apiVersion": "2016-03-30",
-          "dependsOn": [
-            "[resourceId('Microsoft.Compute/virtualMachines', variables('resourceName'))]"
-          ],
-          "tags": {
-            "displayName": "AzureWireGuard"
-          },
-          "properties": {
-            "publisher": "Microsoft.Azure.Extensions",
-            "type": "CustomScript",
-            "typeHandlerVersion": "2.0",
-            "autoUpgradeMinorVersion": true,
-            "settings": {
-              "skipDos2Unix": false,
-              "fileUris": [
-                "[concat(parameters('_artifactsLocation'), '/', variables('AzureWireGuardScriptFolder'), '/', variables('AzureWireGuardScriptFileName'), parameters('_artifactsLocationSasToken'))]"
-              ],
-              "commandToExecute": "[concat('bash ', variables('AzureWireGuardScriptFileName'), ' ', reference(resourceId('Microsoft.Network/publicIPAddresses', variables('resourceName'))).dnsSettings.fqdn, ' ', parameters('adminUsername'))]"
-            }
-          }
-        },
+        
         {
           "type": "extensions",
           "name": "Microsoft.Insights.VMDiagnosticsSettings",
