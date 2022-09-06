@@ -48,7 +48,7 @@
   "resources": [
     {
       "type": "Microsoft.Storage/storageAccounts",
-      "name": "sa-climateplcportal-prod",
+      "name": "saclimateplcportalprod",
       "apiVersion": "2018-07-01",
       "location": "[resourceGroup().location]",
       "tags": {
@@ -506,8 +506,8 @@
               }
             },
             "protectedSettings": {
-              "storageAccountName": "sa-climateplcportal-prod",
-              "storageAccountKey": "[listkeys(resourceId('Microsoft.Storage/storageAccounts', 'sa-climateplcportal-prod'), '2016-01-01').keys[0].value]"
+              "storageAccountName": "saclimateplcportalprod",
+              "storageAccountKey": "[listkeys(resourceId('Microsoft.Storage/storageAccounts', 'saclimateplcportalprod'), '2016-01-01').keys[0].value]"
             }
           }
         }
